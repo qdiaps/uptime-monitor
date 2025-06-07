@@ -1,0 +1,30 @@
+services:
+  web-app:
+    build:
+      context: './web-app/docker'
+      dockerfile: Dockerfile
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    ports:
+      - '80:80'
+      - '5173:5173'
+    volumes:
+      - './web-app:/var/www/html'
+    networks:
+      - uptime-monitor
+    depends_on:
+      - pgsql
+  pgsql:
+    image: postgres:13-alpine3.22
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+#      POSTGRES_MULTIPLE_DATABASES: db1,db2
+    ports:
+      - '5432:5432'
+    networks:
+      - uptime-monitor
+
+networks:
+  uptime-monitor:
+    driver: bridge
