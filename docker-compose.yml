@@ -15,14 +15,23 @@ services:
     depends_on:
       - pgsql
       - kafka
+      - redis
   pgsql:
     image: postgres:13-alpine3.22
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: user
+      POSTGRES_DB: db
 #      POSTGRES_MULTIPLE_DATABASES: db1,db2
     ports:
       - '5432:5432'
+    networks:
+      - uptime-monitor
+  redis:
+    image: redis:7.4.4-alpine3.21
+    command: ["redis-server", "--requirepass", "root"]
+    ports:
+      - '6379:6379'
     networks:
       - uptime-monitor
   kafdrop:
