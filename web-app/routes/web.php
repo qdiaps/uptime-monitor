@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MonitorCreateController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -24,6 +25,6 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/foo', [\App\Http\Controllers\FooController::class, 'index'])->name('foo');
+Route::get('/monitor/create', [MonitorCreateController::class, 'create'])->name('monitor.create');
 
 require __DIR__.'/auth.php';

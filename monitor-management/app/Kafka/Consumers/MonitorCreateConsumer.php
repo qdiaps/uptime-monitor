@@ -2,15 +2,17 @@
 
 namespace App\Kafka\Consumers;
 
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Artisan;
 use Junges\Kafka\Contracts\Consumer;
 use Junges\Kafka\Contracts\ConsumerMessage;
 use Junges\Kafka\Contracts\MessageConsumer;
 
-class FooConsumer extends Consumer
+class MonitorCreateConsumer extends Consumer
 {
     public function handle(ConsumerMessage $message, MessageConsumer $consumer): void
     {
-        Log::debug($message->getBody());
+        Artisan::queue('monitor:handle-ping-check-request', [
+            'data' => $message->getBody(),
+        ]);
     }
 }

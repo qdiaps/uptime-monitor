@@ -13,25 +13,88 @@ services:
     networks:
       - uptime-monitor
     depends_on:
-      - pgsql
+      - pgsql.web-app
       - kafka
-      - redis
-  pgsql:
+      - redis.web-app
+  monitor-management:
+    build:
+      context: './monitor-management/docker'
+      dockerfile: Dockerfile
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - './monitor-management:/var/www/html'
+    networks:
+      - uptime-monitor
+    depends_on:
+      - pgsql.monitor-management
+      - kafka
+      - redis.monitor-management
+  checker:
+    build:
+      context: './checker/docker'
+      dockerfile: Dockerfile
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - './checker:/var/www/html'
+    networks:
+      - uptime-monitor
+    depends_on:
+      - pgsql.checker
+      - kafka
+      - redis.checker
+  pgsql.web-app:
     image: postgres:13-alpine3.22
     environment:
       POSTGRES_PASSWORD: password
       POSTGRES_USER: user
       POSTGRES_DB: db
-#      POSTGRES_MULTIPLE_DATABASES: db1,db2
     ports:
       - '5432:5432'
     networks:
       - uptime-monitor
-  redis:
+  pgsql.monitor-management:
+    image: postgres:13-alpine3.22
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: db
+      PGPORT: 5433
+    ports:
+      - '5433:5433'
+    networks:
+      - uptime-monitor
+  pgsql.checker:
+    image: postgres:13-alpine3.22
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: user
+      POSTGRES_DB: db
+      PGPORT: 5434
+    ports:
+      - '5434:5434'
+    networks:
+      - uptime-monitor
+  redis.web-app:
     image: redis:7.4.4-alpine3.21
     command: ["redis-server", "--requirepass", "root"]
     ports:
       - '6379:6379'
+    networks:
+      - uptime-monitor
+  redis.monitor-management:
+    image: redis:7.4.4-alpine3.21
+    command: [ "redis-server", "--requirepass", "root", "--port", "6380"]
+    ports:
+      - '6380:6380'
+    networks:
+      - uptime-monitor
+  redis.checker:
+    image: redis:7.4.4-alpine3.21
+    command: [ "redis-server", "--requirepass", "root", "--port", "6381" ]
+    ports:
+      - '6381:6381'
     networks:
       - uptime-monitor
   kafdrop:

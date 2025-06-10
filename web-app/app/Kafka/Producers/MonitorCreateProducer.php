@@ -2,25 +2,27 @@
 
 namespace App\Kafka\Producers;
 
+use Exception;
 use Illuminate\Support\Facades\Log;
 use Junges\Kafka\Facades\Kafka;
 use Junges\Kafka\Message\Message;
 
-class FooProducer
+class MonitorCreateProducer
 {
-    public function foo(): void
+    public function produce(): void
     {
         $message = new Message(
-            headers: ['header_key' => 'header_value'],
-            body: ['body_key' => 'body_value'],
-            key: 'key',
+            body: [
+                'host' => 'google.com',
+                'count_replies' => 3,
+            ],
         );
         try {
-            Kafka::publish('kafka')
-                ->onTopic('foo')
+            Kafka::asyncPublish('kafka')
+                ->onTopic('monitor_management.monitor.create')
                 ->withMessage($message)
                 ->send();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             Log::error($e->getMessage());
         }
     }
