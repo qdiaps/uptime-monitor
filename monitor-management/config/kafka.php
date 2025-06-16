@@ -12,7 +12,7 @@ return [
     'securityProtocol' =>  env('KAFKA_SECURITY_PROTOCOL', 'PLAINTEXT'),
 
     /*
-     | Default sasl configuration 
+     | Default sasl configuration
      */
     'sasl' => [
         'mechanisms' => env('KAFKA_MECHANISMS', 'PLAINTEXT'),
@@ -88,5 +88,5 @@ return [
     /*
      | Kafka message id key name
      */
-    'message_id_key' => env('MESSAGE_ID_KEY', 'laravel-kafka::message-id'),
+    'message_id_key' => env('MESSAGE_ID_KEY', 'x-request-id'),
 ];

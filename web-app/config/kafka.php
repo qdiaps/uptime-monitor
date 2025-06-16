@@ -88,5 +88,5 @@ return [
     /*
      | Kafka message id key name
      */
-    'message_id_key' => env('MESSAGE_ID_KEY', 'laravel-kafka::message-id'),
+    'message_id_key' => env('MESSAGE_ID_KEY', 'x-request-id'),
 ];
