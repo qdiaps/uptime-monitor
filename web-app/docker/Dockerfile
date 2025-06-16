@@ -14,4 +14,7 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 EXPOSE 80/tcp
 
+RUN adduser -S 1000 -G users -s /bin/sh -u 1000
+USER 1000
+
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]

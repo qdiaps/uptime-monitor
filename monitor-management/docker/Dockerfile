@@ -12,4 +12,7 @@ RUN install-php-extensions @composer xdebug pdo_pgsql pgsql rdkafka redis
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
+RUN adduser -S 1000 -G users -s /bin/sh -u 1000
+USER 1000
+
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
