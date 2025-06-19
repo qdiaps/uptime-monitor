@@ -17,6 +17,9 @@ d-build:
 d-down:
 	@docker-compose down
 
+d-clean:
+	@docker-compose down --rmi all --volumes --remove-orphans
+
 d-stop:
 	@docker-compose stop
 
@@ -66,8 +69,12 @@ p-recreate-monitor:
 # other
 init: d-build k-add-topics p-init-app p-recreate-app p-init-monitor p-recreate-monitor
 
+reinit: d-clean init
+
 start: d-up
 
 stop: d-stop
 
 down: d-down
+
+clean: d-clean
