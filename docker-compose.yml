@@ -1,5 +1,6 @@
 services:
   web-app:
+    container_name: uptime-monitor.web-app
     build:
       context: './web-app/docker'
       dockerfile: Dockerfile
@@ -17,6 +18,7 @@ services:
       - kafka
       - redis.web-app
   monitor-management:
+    container_name: uptime-monitor.monitor-management
     build:
       context: './monitor-management/docker'
       dockerfile: Dockerfile
@@ -31,6 +33,7 @@ services:
       - kafka
       - redis.monitor-management
   pgsql.web-app:
+    container_name: uptime-monitor.pgsql.web-app
     image: postgres:13-alpine3.22
     environment:
       POSTGRES_PASSWORD: password
@@ -41,6 +44,7 @@ services:
     networks:
       - uptime-monitor
   pgsql.monitor-management:
+    container_name: uptime-monitor.pgsql.monitor-management
     image: postgres:13-alpine3.22
     environment:
       POSTGRES_PASSWORD: password
@@ -52,6 +56,7 @@ services:
     networks:
       - uptime-monitor
   redis.web-app:
+    container_name: uptime-monitor.redis.web-app
     image: redis:7.4.4-alpine3.21
     command: ["redis-server", "--requirepass", "root"]
     ports:
@@ -59,6 +64,7 @@ services:
     networks:
       - uptime-monitor
   redis.monitor-management:
+    container_name: uptime-monitor.redis.monitor-management
     image: redis:7.4.4-alpine3.21
     command: [ "redis-server", "--requirepass", "root", "--port", "6380"]
     ports:
@@ -66,6 +72,7 @@ services:
     networks:
       - uptime-monitor
   kafdrop:
+    container_name: uptime-monitor.kafdrop
     image: obsidiandynamics/kafdrop:4.1.0
     environment:
       - KAFKA_BROKERCONNECT=kafka:9092
@@ -76,6 +83,7 @@ services:
     depends_on:
       - kafka
   kafka:
+    container_name: uptime-monitor.kafka
     image: bitnami/kafka:4.0.0
     environment:
       - KAFKA_CFG_NODE_ID=0
