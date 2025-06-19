@@ -62,7 +62,7 @@ Main functionality:
 | **[predis](https://github.com/predis/predis)**                     | Redis client       | Working with Redis for Laravel caching, sessions and queues.                                      |
 
 ## Getting Started
-1. Clone the repository
+1. **Clone the repository**.
 ```bash
 git clone https://github.com/qdiaps/uptime-monitor.git
 cd uptime-monitor
@@ -72,8 +72,8 @@ cd uptime-monitor
 make init 
 ```
 3. **Access services**. Upon successful completion:
-- **Web Application** → http://localhost  Main interface on Laravel + Vue.js
-- **Kafdrop** (Kafka UI) → http://localhost:9000  Real-time monitoring of Kafka's topicals
+- **Web Application** main interface on Laravel + Vue.js → http://localhost
+- **Kafdrop** real-time monitoring of Kafka's topicals (Kafka UI) → http://localhost:9000
 
 ## Architecture
 The system is built on a microservice architecture with separation of data and functionality. Main components:
