@@ -67,17 +67,13 @@ Main functionality:
 git clone https://github.com/qdiaps/uptime-monitor.git
 cd uptime-monitor
 ```
-2. Initialize the project
-    Run the automatic configuration (image build, dependency installation, database migrations):
+2. **Initialize the project**. Run the automatic configuration (image build, dependency installation, database migrations):
 ```bash
 make init 
 ```
-3. Access services
-   Upon successful completion:
-- **Web Application** → http://localhost
-  Main interface on Laravel + Vue.js
-- **Kafdrop** (Kafka UI) → http://localhost:9000
-  Real-time monitoring of Kafka's topicals
+3. **Access services**. Upon successful completion:
+- **Web Application** → http://localhost  Main interface on Laravel + Vue.js
+- **Kafdrop** (Kafka UI) → http://localhost:9000  Real-time monitoring of Kafka's topicals
 
 ## Architecture
 The system is built on a microservice architecture with separation of data and functionality. Main components:
@@ -100,6 +96,8 @@ The system is built on a microservice architecture with separation of data and f
 | `make stop`   | Stopping services (without deletion)                                                                                                                                         |
 | `make down`   | Stopping and removing containers                                                                                                                                             |
 | `make clean`  | Complete cleanup (containers, images, volumes, networks)                                                                                                                     |
+
+---
 
 <div align="center">
   <br>
