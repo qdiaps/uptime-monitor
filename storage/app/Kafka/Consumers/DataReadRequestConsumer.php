@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App\Kafka\Consumers;
 
@@ -9,7 +9,6 @@ use Junges\Kafka\Contracts\MessageConsumer;
 
 class DataReadRequestConsumer extends Consumer
 {
-
     public function handle(ConsumerMessage $message, MessageConsumer $consumer): void
     {
         $msg = $message->getBody();
