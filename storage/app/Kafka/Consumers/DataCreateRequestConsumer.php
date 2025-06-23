@@ -18,11 +18,11 @@ class DataCreateRequestConsumer extends Consumer
         $validated = validator($msg['data'], (new $request())->rules())->validate();
 
         $model = 'App\\Models\\' . $msg['table'];
-        $pingResult = $model::create($validated);
+        $result = $model::create($validated);
 
         (new DataCreateResponseProducer())->produce([
             'success' => true,
-            'result' => $pingResult,
+            'result' => $result,
         ], $correlation_id);
     }
 }
