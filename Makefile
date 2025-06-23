@@ -2,6 +2,8 @@ APP_NAME := uptime-monitor
 APP_SERVICE := $(APP_NAME).web-app
 MONITOR_NAME := monitor-hub
 MONITOR_SERVICE := $(APP_NAME).$(MONITOR_NAME)
+STORAGE_NAME := storage
+STORAGE_SERVICE := $(APP_NAME).$(STORAGE_NAME)
 KAFKA_SERVICE := $(APP_NAME).kafka
 KAFKA_SERVICE_PORT := 9092
 
@@ -68,8 +70,17 @@ p-init-monitor:
 p-recreate-monitor:
 	@$(DOCKER_UP) --force-recreate $(MONITOR_NAME)
 
+p-init-storage:
+	@$(EXEC) $(STORAGE_SERVICE) $(COPY_ENV)
+	@$(EXEC) $(STORAGE_SERVICE) $(COMPOSER_INSTALL)
+	@$(EXEC) $(STORAGE_SERVICE) $(KEY_GENERATE)
+	@$(EXEC) $(STORAGE_SERVICE) $(MIGRATE)
+
+p-recreate-storage:
+	@$(DOCKER_UP) --force-recreate $(STORAGE_NAME)
+
 # other
-init: d-build k-add-topics p-init-app p-recreate-app p-init-monitor p-recreate-monitor
+init: d-build k-add-topics p-init-app p-recreate-app p-init-monitor p-recreate-monitor p-init-storage p-recreate-storage
 
 reinit: d-clean init
 
