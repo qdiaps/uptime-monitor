@@ -1,10 +1,13 @@
 APP_NAME := uptime-monitor
-APP_SERVICE := $(APP_NAME).web-app
+
+WEB_APP_NAME := web-app
+WEB_APP_SERVICE := $(APP_NAME).$(WEB_APP_NAME)
 MONITOR_NAME := monitor-hub
 MONITOR_SERVICE := $(APP_NAME).$(MONITOR_NAME)
 STORAGE_NAME := storage
 STORAGE_SERVICE := $(APP_NAME).$(STORAGE_NAME)
-KAFKA_SERVICE := $(APP_NAME).kafka
+KAFKA_NAME := kafka
+KAFKA_SERVICE := $(APP_NAME).$(KAFKA_NAME)
 KAFKA_SERVICE_PORT := 9092
 
 EXEC := docker exec -it
@@ -29,22 +32,50 @@ d-stop:
 
 # kafka
 BOOTSTRAP_SERVER := --bootstrap-server $(KAFKA_SERVICE):$(KAFKA_SERVICE_PORT)
+KAFKA_TOPICS_CMD := $(EXEC) $(KAFKA_SERVICE) kafka-topics.sh $(BOOTSTRAP_SERVER)
 
-k-add-topics:
-	@$(EXEC) $(KAFKA_SERVICE) kafka-topics.sh $(BOOTSTRAP_SERVER) --create --topic \
-		monitor_management.monitor.create --partitions 1 --replication-factor 1
-	@$(EXEC) $(KAFKA_SERVICE) kafka-topics.sh $(BOOTSTRAP_SERVER) --create --topic \
-		checker.ping.check.request --partitions 1 --replication-factor 1
-	@$(EXEC) $(KAFKA_SERVICE) kafka-topics.sh $(BOOTSTRAP_SERVER) --create --topic \
-		checker.ping.check.reply --partitions 1 --replication-factor 1
+CREATE_TOPIC := $(KAFKA_TOPICS_CMD) --create --topic
+DELETE_TOPIC := $(KAFKA_TOPICS_CMD) --delete --topic
 
-k-remove-topics:
-	@$(EXEC) $(KAFKA_SERVICE) kafka-topics.sh $(BOOTSTRAP_SERVER) --delete --topic \
-		monitor_management.monitor.create
-	@$(EXEC) $(KAFKA_SERVICE) kafka-topics.sh $(BOOTSTRAP_SERVER) --delete --topic \
-		checker.ping.check.request
-	@$(EXEC) $(KAFKA_SERVICE) kafka-topics.sh $(BOOTSTRAP_SERVER) --delete --topic \
-		checker.ping.check.reply
+PART_AND_REPL_1 := --partitions 1 --replication-factor 1
+
+k-add-monitor:
+	@$(CREATE_TOPIC) monitor_management.monitor.create $(PART_AND_REPL_1)
+
+k-remove-monitor:
+	@$(DELETE_TOPIC) monitor_management.monitor.create
+
+k-add-checker:
+	@$(CREATE_TOPIC) checker.ping.check.request $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) checker.ping.check.reply $(PART_AND_REPL_1)
+
+k-remove-checker:
+	@$(DELETE_TOPIC) checker.ping.check.request
+	@$(DELETE_TOPIC) checker.ping.check.reply
+
+k-add-storage:
+	@$(CREATE_TOPIC) storage.data.create.request $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) storage.data.create.response $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) storage.data.read.request $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) storage.data.read.response $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) storage.data.update.request $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) storage.data.update.response $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) storage.data.delete.request $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) storage.data.delete.response $(PART_AND_REPL_1)
+
+k-remove-storage:
+	@$(DELETE_TOPIC) storage.data.create.request
+	@$(DELETE_TOPIC) storage.data.create.response
+	@$(DELETE_TOPIC) storage.data.read.request
+	@$(DELETE_TOPIC) storage.data.read.response
+	@$(DELETE_TOPIC) storage.data.update.request
+	@$(DELETE_TOPIC) storage.data.update.response
+	@$(DELETE_TOPIC) storage.data.delete.request
+	@$(DELETE_TOPIC) storage.data.delete.response
+
+k-add-topics: k-add-monitor k-add-checker k-add-storage
+
+k-remove-topics: k-remove-monitor k-remove-monitor k-remove-storage
 
 # php
 COMPOSER_INSTALL := composer install
@@ -52,11 +83,11 @@ KEY_GENERATE := php artisan key:generate
 MIGRATE := php artisan migrate
 
 p-init-app:
-	@$(EXEC) $(APP_SERVICE) $(COPY_ENV)
-	@$(EXEC) $(APP_SERVICE) $(COMPOSER_INSTALL)
-	@$(EXEC) $(APP_SERVICE) $(KEY_GENERATE)
-	@$(EXEC) $(APP_SERVICE) $(MIGRATE)
-	@$(EXEC) $(APP_SERVICE) npm install
+	@$(EXEC) $(WEB_APP_SERVICE) $(COPY_ENV)
+	@$(EXEC) $(WEB_APP_SERVICE) $(COMPOSER_INSTALL)
+	@$(EXEC) $(WEB_APP_SERVICE) $(KEY_GENERATE)
+	@$(EXEC) $(WEB_APP_SERVICE) $(MIGRATE)
+	@$(EXEC) $(WEB_APP_SERVICE) npm install
 
 p-recreate-app:
 	@$(DOCKER_UP) --force-recreate web-app
@@ -79,10 +110,14 @@ p-init-storage:
 p-recreate-storage:
 	@$(DOCKER_UP) --force-recreate $(STORAGE_NAME)
 
+p-init-all: p-init-app p-recreate-app p-init-monitor p-recreate-monitor p-init-storage p-recreate-storage
+
 # other
-init: d-build k-add-topics p-init-app p-recreate-app p-init-monitor p-recreate-monitor p-init-storage p-recreate-storage
+init: d-build k-add-topics p-init-all
 
 reinit: d-clean init
+
+kafka-reinit: k-remove-topics k-add-topics
 
 start: d-up
 
@@ -90,4 +125,6 @@ stop: d-stop
 
 down: d-down
 
-clean: d-clean
+clean-docker: d-clean
+
+build: d-build
