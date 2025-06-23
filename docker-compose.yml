@@ -17,21 +17,21 @@ services:
       - pgsql.web-app
       - kafka
       - redis.web-app
-  monitor-management:
-    container_name: uptime-monitor.monitor-management
+  monitor-hub:
+    container_name: uptime-monitor.monitor-hub
     build:
-      context: './monitor-management/docker'
+      context: 'monitor-hub/docker'
       dockerfile: Dockerfile
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     volumes:
-      - './monitor-management:/var/www/html'
+      - './monitor-hub:/var/www/html'
     networks:
       - uptime-monitor
     depends_on:
-      - pgsql.monitor-management
+      - pgsql.monitor-hub
       - kafka
-      - redis.monitor-management
+      - redis.monitor-hub
   pgsql.web-app:
     container_name: uptime-monitor.pgsql.web-app
     image: postgres:13-alpine3.22
@@ -43,8 +43,8 @@ services:
       - '5432:5432'
     networks:
       - uptime-monitor
-  pgsql.monitor-management:
-    container_name: uptime-monitor.pgsql.monitor-management
+  pgsql.monitor-hub:
+    container_name: uptime-monitor.pgsql.monitor-hub
     image: postgres:13-alpine3.22
     environment:
       POSTGRES_PASSWORD: password
@@ -63,8 +63,8 @@ services:
       - '6379:6379'
     networks:
       - uptime-monitor
-  redis.monitor-management:
-    container_name: uptime-monitor.redis.monitor-management
+  redis.monitor-hub:
+    container_name: uptime-monitor.redis.monitor-hub
     image: redis:7.4.4-alpine3.21
     command: [ "redis-server", "--requirepass", "root", "--port", "6380"]
     ports:

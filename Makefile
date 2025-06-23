@@ -1,6 +1,8 @@
-APP_SERVICE := uptime-monitor.web-app
-MONITOR_SERVICE := uptime-monitor.monitor-management
-KAFKA_SERVICE := uptime-monitor.kafka
+APP_NAME := uptime-monitor
+APP_SERVICE := $(APP_NAME).web-app
+MONITOR_NAME := monitor-hub
+MONITOR_SERVICE := $(APP_NAME).$(MONITOR_NAME)
+KAFKA_SERVICE := $(APP_NAME).kafka
 KAFKA_SERVICE_PORT := 9092
 
 EXEC := docker exec -it
@@ -64,7 +66,7 @@ p-init-monitor:
 	@$(EXEC) $(MONITOR_SERVICE) $(MIGRATE)
 
 p-recreate-monitor:
-	@$(DOCKER_UP) --force-recreate monitor-management
+	@$(DOCKER_UP) --force-recreate $(MONITOR_NAME)
 
 # other
 init: d-build k-add-topics p-init-app p-recreate-app p-init-monitor p-recreate-monitor
