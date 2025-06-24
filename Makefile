@@ -40,10 +40,20 @@ DELETE_TOPIC := $(KAFKA_TOPICS_CMD) --delete --topic
 PART_AND_REPL_1 := --partitions 1 --replication-factor 1
 
 k-add-monitor:
-	@$(CREATE_TOPIC) monitor_management.monitor.create $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) monitor_hub.monitor.create.request $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) monitor_hub.monitor.create.response $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) monitor_hub.monitor.enable.request $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) monitor_hub.monitor.enable.response $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) monitor_hub.monitor.disable.request $(PART_AND_REPL_1)
+	@$(CREATE_TOPIC) monitor_hub.monitor.disable.response $(PART_AND_REPL_1)
 
 k-remove-monitor:
-	@$(DELETE_TOPIC) monitor_management.monitor.create
+	@$(DELETE_TOPIC) monitor_hub.monitor.create.request
+	@$(DELETE_TOPIC) monitor_hub.monitor.create.response
+	@$(DELETE_TOPIC) monitor_hub.monitor.enable.request
+	@$(DELETE_TOPIC) monitor_hub.monitor.enable.response
+	@$(DELETE_TOPIC) monitor_hub.monitor.disable.request
+	@$(DELETE_TOPIC) monitor_hub.monitor.disable.response
 
 k-add-checker:
 	@$(CREATE_TOPIC) checker.ping.check.request $(PART_AND_REPL_1)
