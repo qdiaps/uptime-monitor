@@ -79,8 +79,9 @@ k-remove-topics: k-remove-monitor k-remove-monitor k-remove-storage
 
 # php
 COMPOSER_INSTALL := composer install
-KEY_GENERATE := php artisan key:generate
-MIGRATE := php artisan migrate
+ARTISAN := php artisan
+KEY_GENERATE := $(ARTISAN) key:generate
+MIGRATE := $(ARTISAN) migrate
 
 p-init-app:
 	@$(EXEC) $(WEB_APP_SERVICE) $(COPY_ENV)
@@ -97,6 +98,7 @@ p-init-monitor:
 	@$(EXEC) $(MONITOR_SERVICE) $(COMPOSER_INSTALL)
 	@$(EXEC) $(MONITOR_SERVICE) $(KEY_GENERATE)
 	@$(EXEC) $(MONITOR_SERVICE) $(MIGRATE)
+	@$(EXEC) $(MONITOR_SERVICE) $(ARTISAN) monitor:create-types
 
 p-recreate-monitor:
 	@$(DOCKER_UP) --force-recreate $(MONITOR_NAME)
