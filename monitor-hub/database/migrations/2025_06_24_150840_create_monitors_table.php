@@ -25,6 +25,11 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('monitors', function (Blueprint $table) {
+            $table->dropForeign(['type_id']);
+            $table->dropForeign(['ping_param_id']);
+        });
+
         Schema::dropIfExists('monitors');
     }
 };
