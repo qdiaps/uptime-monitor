@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class Monitor extends Model
 {
     protected $fillable = [
-        'user_id'
+        'user_id',
+        'is_enabled',
     ];
 
     public function monitorType(): BelongsTo
